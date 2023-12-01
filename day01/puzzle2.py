@@ -3,11 +3,14 @@ import re
 # input_filename = 'sample_data2'
 input_filename = 'input.txt'
 
-# use a regular expression to find all of the digits in the string, by name or number
+# use a regular expression to find all single digits in the string by number and *most* single digits by name
+# ex: searching forward, this will find 'eight' but not 'two' in eightwo
+#     searching in reverse, this will find 'two' but not 'eight' in eightwo
+# that's not perfect, but it's good enough for this solution, because we don't need very digit, just first & last
 digit_regex_forward = re.compile(r'\d|one|two|three|four|five|six|seven|eight|nine')
 digit_regex_reverse = re.compile(r'\d|eno|owt|eerht|ruof|evif|xis|neves|thgie|enin')
 
-# map the digit by digit string or by name (forward or backward) to the digit string
+# map the digit by name (forward or backward) or by digit string to the digit string
 conversion = {
     '1': '1',
     'one': '1',

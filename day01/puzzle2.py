@@ -3,11 +3,11 @@ import re
 # input_filename = 'sample_data2'
 input_filename = 'input.txt'
 
+# use a regular expression to find all of the digits in the string, by name or number
 digit_regex_forward = re.compile(r'\d|one|two|three|four|five|six|seven|eight|nine')
 digit_regex_reverse = re.compile(r'\d|eno|owt|eerht|ruof|evif|xis|neves|thgie|enin')
 
-the_sum = 0
-
+# map the digit by digit string or by name (forward or backward) to the digit string
 conversion = {
     '1': '1',
     'one': '1',
@@ -38,12 +38,14 @@ conversion = {
     'enin': '9',
 }
 
+the_sum = 0
+
 for line in open(input_filename):
-    # print(line)
-    forward_digits = digit_regex_forward.findall(line)
-    reverse_digits = digit_regex_reverse.findall(line[::-1])
-    digit_string = conversion[forward_digits[0]] + conversion[reverse_digits[0]]
-    print(digit_string)
-    the_sum += int(digit_string)
+    # use regex to search the string for the first digit, either the number or the name
+    first_digit = digit_regex_forward.search(line)[0]
+    # use regex search the reversed string for the last digit, either the number or the name
+    last_digit = digit_regex_reverse.search(line[::-1])[0]
+    number_string = conversion[first_digit] + conversion[last_digit]
+    the_sum += int(number_string)
 
 print(the_sum)

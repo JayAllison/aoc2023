@@ -4,9 +4,9 @@ from pprint import pprint
 @dataclass
 class Game:
     ID: int
-    red: list[int] = field(default_factory=list)
-    blue: list[int] = field(default_factory=list)
-    green: list[int] = field(default_factory=list)
+    max_red: int = 0
+    max_blue: int = 0
+    max_green: int = 0
 
 
 red_limit = 12
@@ -18,6 +18,12 @@ input_filename = 'input.txt'
 
 games = []
 
+# example line to parse: `Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red`
+#   split on the colon --------|
+#   then split on the space --|
+#   then split on the semi-colons ----------------------|------------------------|
+#   then split on the spaces, then compare the color words
+#   before each split, strip any leading and trailing whitespace
 for line in open(input_filename):
     game_name, cubes_drawn = line.lstrip().rstrip().split(':')
     this_game = Game(int(game_name.lstrip().rstrip().split(' ')[1]))
@@ -30,26 +36,16 @@ for line in open(input_filename):
             count, color = color_and_count.lstrip().rstrip().split(' ')
             match color:
                 case 'red':
-                    this_game.red.append(int(count))
+                    this_game.max_red = max(int(count), this_game.max_red)
                 case 'green':
-                    this_game.green.append(int(count))
+                    this_game.max_green = max(int(count), this_game.max_green)
                 case 'blue':
-                    this_game.blue.append(int(count))
+                    this_game.max_blue = max(int(count), this_game.max_blue)
 
 possible_IDs = []
 
 for game in games:
-    good = True
-    for red_count in game.red:
-        if red_count > red_limit:
-            good = False
-    for green_count in game.green:
-        if green_count > green_limit:
-            good = False
-    for blue_count in game.blue:
-        if blue_count > blue_limit:
-            good = False
-    if good:
+    if game.max_red <= red_limit and game.max_green <= green_limit and game.max_blue <= blue_limit:
         possible_IDs.append(game.ID)
 
 print(sum(possible_IDs))

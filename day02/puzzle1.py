@@ -1,5 +1,6 @@
-from dataclasses import dataclass, field
-from pprint import pprint
+from dataclasses import dataclass
+import re
+
 
 @dataclass
 class Game:
@@ -9,9 +10,9 @@ class Game:
     max_green: int = 0
 
 
-red_limit = 12
-green_limit = 13
-blue_limit = 14
+RED_LIMIT = 12
+GREEN_LIMIT = 13
+BLUE_LIMIT = 14
 
 # input_filename = 'sample_data'
 input_filename = 'input.txt'
@@ -19,21 +20,16 @@ input_filename = 'input.txt'
 games = []
 
 # example line to parse: `Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red`
-#   split on the colon --------|
-#   then split on the space --|
-#   then split on the semi-colons ----------------------|------------------------|
-#   then split on the spaces, then compare the color words
-#   before each split, strip any leading and trailing whitespace
+full_line_regex = re.compile(r'Game (\d*):(.*)$')
+color_count_regex = re.compile(r'(\d+) (red|green|blue)')
+
 for line in open(input_filename):
-    game_name, cubes_drawn = line.lstrip().rstrip().split(':')
-    this_game = Game(int(game_name.lstrip().rstrip().split(' ')[1]))
+    game_id, cubes_drawn = full_line_regex.match(line).groups()
+    this_game = Game(int(game_id))
     games.append(this_game)
 
-    cube_sets = cubes_drawn.lstrip().rstrip().split(';')
-    for cube_set in cube_sets:
-        colors_and_counts = cube_set.lstrip().rstrip().split(',')
-        for color_and_count in colors_and_counts:
-            count, color = color_and_count.lstrip().rstrip().split(' ')
+    for cube_set in cubes_drawn.lstrip().rstrip().split(';'):
+        for count, color in color_count_regex.findall(cube_set):
             match color:
                 case 'red':
                     this_game.max_red = max(int(count), this_game.max_red)
@@ -42,10 +38,6 @@ for line in open(input_filename):
                 case 'blue':
                     this_game.max_blue = max(int(count), this_game.max_blue)
 
-possible_IDs = []
-
-for game in games:
-    if game.max_red <= red_limit and game.max_green <= green_limit and game.max_blue <= blue_limit:
-        possible_IDs.append(game.ID)
-
+# Puzzle 1 calculation - is everything under the MAX?
+possible_IDs = [g.ID for g in games if (g.max_red <= RED_LIMIT and g.max_green <= GREEN_LIMIT and g.max_blue <= BLUE_LIMIT)]
 print(sum(possible_IDs))

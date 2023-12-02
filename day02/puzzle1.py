@@ -28,15 +28,14 @@ for line in open(input_filename):
     this_game = Game(int(game_id))
     games.append(this_game)
 
-    for cube_set in cubes_drawn.lstrip().rstrip().split(';'):
-        for count, color in color_count_regex.findall(cube_set):
-            match color:
-                case 'red':
-                    this_game.max_red = max(int(count), this_game.max_red)
-                case 'green':
-                    this_game.max_green = max(int(count), this_game.max_green)
-                case 'blue':
-                    this_game.max_blue = max(int(count), this_game.max_blue)
+    for count, color in color_count_regex.findall(cubes_drawn):
+        match color:
+            case 'red':
+                this_game.max_red = max(int(count), this_game.max_red)
+            case 'green':
+                this_game.max_green = max(int(count), this_game.max_green)
+            case 'blue':
+                this_game.max_blue = max(int(count), this_game.max_blue)
 
 # Puzzle 1 calculation - is everything under the MAX?
 possible_IDs = [g.ID for g in games if (g.max_red <= RED_LIMIT and g.max_green <= GREEN_LIMIT and g.max_blue <= BLUE_LIMIT)]

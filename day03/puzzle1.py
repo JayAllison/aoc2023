@@ -1,6 +1,6 @@
 import re
 import itertools
-from pprint import pprint
+# from pprint import pprint
 
 # input_filename: str = 'sample_data'
 # input_filename: str = 'sample2'
@@ -18,22 +18,22 @@ part_number_positions: dict[tuple[int, int]: tuple[int, int]] = {}
 # store every part number starting point mapped to the value of the part number
 part_numbers: dict[tuple[int, int]: int] = {}
 
-# Step 1: search for all part numbers, and store off their locations and values
+# Step 1: search schematic for all part numbers, one row at a time, and store off their locations and values
 part_number_finder: re.Pattern = re.compile(r'[0-9]+')
 for y in range(Y_MAX):
-    part_number_found: re.Match
-    for part_number_found in part_number_finder.finditer(schematic[y]):
-        part_number_start: tuple[int, int] = (part_number_found.start(), y)
-        part_numbers[part_number_start] = int(part_number_found[0])
-        for x in range(part_number_found.start(), part_number_found.end(), 1):
-            part_number_positions[(x, y)] = part_number_start
+    found_pn: re.Match
+    for found_pn in part_number_finder.finditer(schematic[y]):
+        part_number_start: tuple[int, int] = (found_pn.start(), y)
+        part_numbers[part_number_start] = int(found_pn[0])
+        part_number_positions.update({(x, y): part_number_start for x in range(found_pn.start(), found_pn.end(), 1)})
 
 print(f'Found {len(part_numbers)} part numbers.')
 
 # store all found part number starting positions in a set, so we only include each part number once
 adjacent_part_number_starting_positions: set[tuple[int, int]] = set()
 
-# Step 2: find symbols and check adjacent positions for the presence of a part number
+# Step 2: search entire schematic, position by position
+# when symbol is found, check adjacent positions for the presence of a part number
 symbol_count: int = 0
 for x, y in itertools.product(range(X_MAX), range(Y_MAX)):
     if schematic[y][x] not in '0123456789.':

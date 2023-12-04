@@ -12,6 +12,7 @@ lines: list[str] = [line.rstrip() for line in open(input_filename)]
 
 card_values: dict = {}
 
+# Step 1: store the value of each card, so we can look it up later
 for line in lines:
     card_number, numbers = line.split(':')
     discard, card_number = card_number.split()
@@ -24,7 +25,9 @@ for line in lines:
     else:
         card_values[int(card_number)] = 0
 
-cards_to_play = collections.deque(card_values.keys())  # use a deque so we can efficiently pop from the front
+# Step 2: play the game by the rules, and count how many cards get played
+# using a deque so we can efficiently pop from the front - every time a copy is "won", add it to the queue to play again
+cards_to_play = collections.deque(card_values.keys())
 count = 0
 while cards_to_play:
     count += 1

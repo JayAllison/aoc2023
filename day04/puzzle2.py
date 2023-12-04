@@ -1,5 +1,8 @@
 import collections
+import datetime
 from pprint import pprint
+
+start = datetime.datetime.now()
 
 # input_filename: str = 'sample_data'
 input_filename: str = 'input.txt'
@@ -7,27 +10,26 @@ input_filename: str = 'input.txt'
 # read in the input
 lines: list[str] = [line.rstrip() for line in open(input_filename)]
 
-cards = {}
+card_values: dict = {}
 
 for line in lines:
-    card, numbers = line.split(':')
-    discard, card_id = card.split()
+    card_number, numbers = line.split(':')
+    discard, card_number = card_number.split()
     winners, haves = numbers.split('|')
     winning_numbers = winners.split()
     number_i_have = haves.split()
 
-    my_winners = set(winning_numbers).intersection(number_i_have)
-    if my_winners:
-        cards[int(card_id)] = len(my_winners)
+    if my_winners := set(winning_numbers).intersection(number_i_have):
+        card_values[int(card_number)] = len(my_winners)
     else:
-        cards[int(card_id)] = 0
+        card_values[int(card_number)] = 0
 
-cards_to_play = collections.deque(cards.keys())
+cards_to_play = collections.deque(card_values.keys())  # use a deque so we can efficiently pop from the front
 count = 0
 while cards_to_play:
-    card = cards_to_play.popleft()
     count += 1
-    for i in range(cards[card]):
-        cards_to_play.append(card + i + 1)
+    card_number = cards_to_play.popleft()
+    for i in range(card_values[card_number]):
+        cards_to_play.append(card_number + i + 1)
 
-print(count)
+print(f'Found {count} total cards in {datetime.datetime.now()-start}')

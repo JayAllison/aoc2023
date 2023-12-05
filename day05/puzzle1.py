@@ -1,3 +1,4 @@
+import math
 import re
 
 # input_filename = 'sample_data'
@@ -44,11 +45,11 @@ for mapper in mappers:
 seeds: list[int] = [int(i) for i in re.findall(r'\d+', seeds_line)]
 
 # map each seed all the way through and store the result
-locations: list[int] = []
+min_location = math.inf  # inf is a float, but it's supposed to always be bigger than everything
 for n in seeds:
     for mapper in mappers:
         n = mapper.map(n)
-    locations.append(n)
+    min_location = min(min_location, n)
 
 # display the smallest result
-print(min(locations))
+print(min_location)

@@ -1,4 +1,3 @@
-import pprint
 import re
 
 # input_filename = 'sample_data'
@@ -7,113 +6,49 @@ input_filename = 'input.txt'
 
 class AlmanacMap:
 
-    ranges: list[list[int]] = None  # how could I initialize this to a unique empty list?
+    lines: list[str] = None
+    _ranges: list[list[int]] = None
 
-    def __init__(self, lines_to_parse):
-        # pprint.pprint(self.ranges)
-        self.parse(lines_to_parse)
+    def __init__(self):
+        self.lines = []
 
-    def parse(self, lines):
-        self.ranges = [[int(i) for i in _line.split()] for _line in lines]
-        # pprint.pprint(self.ranges)
+    def parse(self):
+        self._ranges = [[int(i) for i in _line.split()] for _line in self.lines]
 
     def map(self, x: int) -> int:
-        for _range in self.ranges:
+        for _range in self._ranges:
             if _range[1] <= x < _range[1] + _range[2]:
                 return _range[0] + (x - _range[1])
         return x
 
 
-ss_lines: list[str] = []
-sf_lines: list[str] = []
-fw_lines: list[str] = []
-wl_lines: list[str] = []
-lt_lines: list[str] = []
-th_lines: list[str] = []
-hl_lines: list[str] = []
+# we don't need to know which mapper is which, we just need to cascade sequentially (thanks, Francis!)
+mappers: list[AlmanacMap] = []
 
-# parse the input file
+# break up the input file into groups of lines that we can then parse
 with open(input_filename) as file:
-    seeds_line = file.readline().rstrip()
-
-    ss = False
-    sf = False
-    fw = False
-    wl = False
-    lt = False
-    th = False
-    hl = False
+    seeds_line: str = file.readline().rstrip()
 
     while line := file.readline():
         line = line.rstrip()
-        match line:
-            case '':
-                ss = False
-                sf = False
-                fw = False
-                wl = False
-                lt = False
-                th = False
-                hl = False
-                continue
-            case 'seed-to-soil map:':
-                ss = True
-                continue
-            case 'soil-to-fertilizer map:':
-                sf = True
-            case 'fertilizer-to-water map:':
-                fw = True
-            case 'water-to-light map:':
-                wl = True
-            case 'light-to-temperature map:':
-                lt = True
-            case 'temperature-to-humidity map:':
-                th = True
-            case 'humidity-to-location map:':
-                hl = True
-            case _:
-                if ss:
-                    ss_lines.append(line)
-                elif sf:
-                    sf_lines.append(line)
-                elif fw:
-                    fw_lines.append(line)
-                elif wl:
-                    wl_lines.append(line)
-                elif lt:
-                    lt_lines.append(line)
-                elif th:
-                    th_lines.append(line)
-                elif hl:
-                    hl_lines.append(line)
+        if not line:
+            new_mapper: AlmanacMap = AlmanacMap()
+            mappers.append(new_mapper)
+        elif ':' not in line:
+            new_mapper.lines.append(line)
+
+# parse each group of lines
+for mapper in mappers:
+    mapper.parse()
 
 seeds: list[int] = [int(i) for i in re.findall(r'\d+', seeds_line)]
-seed_to_soil = AlmanacMap(ss_lines)
-soil_to_fertilizer = AlmanacMap(sf_lines)
-fertilizer_to_water = AlmanacMap(fw_lines)
-water_to_light = AlmanacMap(wl_lines)
-light_to_temperature = AlmanacMap(lt_lines)
-temperature_to_humidity = AlmanacMap(th_lines)
-humidity_to_location = AlmanacMap(hl_lines)
 
+# map each seed all the way through and store the result
 locations: list[int] = []
-for seed in seeds:
-    soil = seed_to_soil.map(seed)
-    fert = soil_to_fertilizer.map(soil)
-    water = fertilizer_to_water.map(fert)
-    light = water_to_light.map(water)
-    temp = light_to_temperature.map(light)
-    hum = temperature_to_humidity.map(temp)
-    loc = humidity_to_location.map(hum)
-    locations.append(loc)
+for n in seeds:
+    for mapper in mappers:
+        n = mapper.map(n)
+    locations.append(n)
 
-    # print(f'{seed}: {soil}')
-    # print(f' {soil}: {fert}')
-    # print(f'  {fert}: {water}')
-    # print(f'   {water}: {light}')
-    # print(f'    {light}: {temp}')
-    # print(f'     {temp}: {hum}')
-    # print(f'      {hum}: {loc}')
-    # print(f'{seed} -> {loc}\n')
-
+# display the smallest result
 print(min(locations))

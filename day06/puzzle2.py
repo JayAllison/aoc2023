@@ -4,8 +4,8 @@ import re
 input_filename = 'input.txt'
 
 with open(input_filename) as file:
-    time_line = file.readline().rstrip()
-    distance_line = file.readline().rstrip()
+    time_line = file.readline().rstrip().replace(' ', '')
+    distance_line = file.readline().rstrip().replace(' ', '')
 
 number_parser = re.compile(r'\d+')
 times = [int(t) for t in number_parser.findall(time_line)]

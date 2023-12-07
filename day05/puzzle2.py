@@ -46,7 +46,7 @@ for mapper in mappers:
 
 seeds: deque[int] = deque([int(i) for i in re.findall(r'\d+', seeds_line)])
 
-# map each seed all the way through and store the result
+# map each seed all the way through and store the lowest result
 min_location = math.inf  # inf is a float, but it's supposed to always be bigger than everything
 while seeds:
     seed_start = seeds.popleft()

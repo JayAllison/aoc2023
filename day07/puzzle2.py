@@ -2,9 +2,9 @@ from enum import Enum
 
 # input_filename = 'sample_data'
 # input_filename = 'test_cards'
-input_filename = 'input.txt'
+input_filename: str = 'input.txt'
 
-CARD_STRENGTHS = 'J23456789TQKA'
+CARD_STRENGTHS: str = 'J23456789TQKA'
 
 debug = False
 # debug = True
@@ -36,7 +36,7 @@ class Hand:
     def __init__(self, hand_of_cards: str, hand_bid: int):
         self.cards = hand_of_cards
         self.bid = hand_bid
-        self.evaluate()
+        self._evaluate_hand_type()
 
     def __gt__(self, other):
         if self.type != other.type:
@@ -55,9 +55,9 @@ class Hand:
     def __lt__(self, other):
         return not self > other and not self == other
 
-    def evaluate(self):
-        card_counts = [self.cards.count(c) for c in CARD_STRENGTHS if c != 'J']
-        j_counts = self.cards.count('J')
+    def _evaluate_hand_type(self):
+        card_counts: list[int] = [self.cards.count(c) for c in CARD_STRENGTHS if c != 'J']
+        j_counts: int = self.cards.count('J')
         dprint(f'{self.cards} {card_counts} {j_counts}')
 
         if max(card_counts) + j_counts == 5:
@@ -68,7 +68,7 @@ class Hand:
             self.type = HandType.FOUR_OF_A_KIND
         elif 3 in card_counts and 2 in card_counts:  # J does not help here
             self.type = HandType.FULL_HOUSE
-        elif 2 in card_counts and card_counts.count(2) == 2 and j_counts == 1:
+        elif 2 in card_counts and card_counts.count(2) == 2 and j_counts == 1:  # two pair + J becomes Full House
             self.type = HandType.FULL_HOUSE
         elif max(card_counts) + j_counts == 3:
             self.type = HandType.THREE_OF_A_KIND
@@ -76,21 +76,21 @@ class Hand:
             self.type = HandType.TWO_PAIR
         elif max(card_counts) + j_counts == 2:
             self.type = HandType.ONE_PAIR
-        elif card_counts.count(1) == 5:  # no J's will be here
+        elif card_counts.count(1) == 5:  # no J's will have gotten through to here
             self.type = HandType.HIGH_CARD
         else:
             print(f'cannot determine card type for {self.cards} with counts {card_counts}')
 
 
 def solve():
-    hands = []
+    hands: list[Hand] = []
 
     for line in open(input_filename):
         the_cards, the_bid = line.rstrip().split()
         hands.append(Hand(the_cards, int(the_bid)))
 
-    rank = 1
-    winnings = 0
+    rank: int = 1
+    winnings: int = 0
     for hand in sorted(hands):
         # print(f'{rank} {hand.cards}: {hand.type} {hand.bid}')
         winnings += rank * hand.bid

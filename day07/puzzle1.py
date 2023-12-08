@@ -60,7 +60,7 @@ class Hand:
             self.type = HandType.TWO_PAIR
         elif 2 in card_counts:  # if we've gotten here then there is not two pairs, so it must be One Pair
             self.type = HandType.ONE_PAIR
-        elif card_counts.count(1) == 5: # otherwise, if all of the cards are different, then it is High Card
+        elif card_counts.count(1) == 5:  # otherwise, if all of the cards are different, then it is High Card
             self.type = HandType.HIGH_CARD
         else:
             print(f'cannot determine card type for {self.cards} with counts {card_counts}')

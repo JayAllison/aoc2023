@@ -39,7 +39,7 @@ def get_next_step(y: int, x: int, direction: str) -> tuple[int | None, int | Non
         if direction == 'west':
             return y + 1, x, 'south'
         elif direction == 'north':
-            return y, x+ 1, 'east'
+            return y, x + 1, 'east'
 
     # this should only happen when we're checking around S for a step to take
     print(f'Unable to find next step: ({x}, {y}) = {pipe_map[y][x]} -> {direction}')

@@ -15,7 +15,8 @@ def is_match(potential_spring_record: str, given_counts: list[int]) -> bool:
     return measured_counts == given_counts
 
 
-# there has got to be a ready-made wy to do this, but I didn't immediately find it - will look harder later
+# there has got to be a ready-made wy to do this, but I didn't immediately find it - later I realized it was as easy as:
+#   itertools.product('.#', repeat=count)
 # I am not worried about recursion depth - I think the max is 20 or so (for Part 1, it was actually 18)
 # use a generator to avoid memory bloat
 def permutate(count: int) -> Iterable[str]:

@@ -1,64 +1,64 @@
-import pprint
+# import pprint
 import datetime
+from typing import Iterable
 
 # input_filename: str = 'sample_data0'
 # input_filename: str = 'sample_data'
 input_filename: str = 'input.txt'
 
 
-def is_match(spring_record: str, spring_counts: list[int]) -> bool:
+def is_match(potential_spring_record: str, given_counts: list[int]) -> bool:
     # find each group of '#' chars and count the length of them - split() on spaces removes multiples
-    broken_counts = [len(group) for group in spring_record.replace('.', ' ').split()]
+    measured_counts = [len(group) for group in potential_spring_record.replace('.', ' ').split()]
 
     # does that measured count sequence match the count sequence we were given?
-    return broken_counts == spring_counts
+    return measured_counts == given_counts
 
 
 # there has got to be a ready-made wy to do this, but I didn't immediately find it - will look harder later
-# I am not worried about recursion depth - I think the max is 20 or so
-def permutate(count: int) -> list[str]:
+# I am not worried about recursion depth - I think the max is 20 or so (for Part 1, it was actually 18)
+# use a generator to avoid memory bloat
+def permutate(count: int) -> Iterable[str]:
+    # recursively generate permutations of '.' and '#' at every position for <count> positions
     if count == 0:
-        return []
+        return None
     elif count == 1:
-        return ['.', '#']
-
-    results = []
-    for p in permutate(count - 1):
-        results.append('.' + p)
-        results.append('#' + p)
-
-    return results
+        yield '.'
+        yield '#'
+    else:
+        for p in permutate(count - 1):
+            yield p + '.'
+            yield p + '#'
 
 
-# given a record, generate every combination of replacing '?' with either '.' or '#'
-def generate_possibilities(spring_record: str) -> list[str]:
-    q_count = spring_record.count('?')
+# use a generator to avoid memory bloat
+def generate_possibilities(spring_record: str) -> Iterable[str]:
+    # given a record, generate every combination of replacing '?' with either '.' or '#'
+    q_count: int = spring_record.count('?')
     if q_count == 0:
         return [spring_record]
 
-    replacements = permutate(q_count)
-
-    possibilities = []
-    for replacement in replacements:
-        possibility = spring_record
+    for replacement in permutate(q_count):
+        possibility: str = spring_record
         for replacement_char in replacement:
             possibility = possibility.replace('?', replacement_char, 1)
-        possibilities.append(possibility)
-
-    return possibilities
+        yield possibility
 
 
 def solve(filename: str) -> int:
-    lines = [line.rstrip() for line in open(filename).readlines()]
-    half_lines = [line.split() for line in lines]
-    records = [[half[0], [int(i) for i in half[1].split(',')]] for half in half_lines]
+    half_lines: list[list[str]] = [line.rstrip().split() for line in open(filename).readlines()]
+    records: list[tuple[str, list[int]]] = [(half[0], [int(i) for i in half[1].split(',')]) for half in half_lines]
 
-    total = 0
+    total: int = 0
+    # max_qs: int = 0
+
+    # for every entry we were given, check the possibilities against the actual to see how many matches we find
     for spring_record, spring_counts in records:
-        sub_total = 0
-        # print(f'{spring_record} : {spring_counts} -> ', end='', flush=True)
-        possibilities = generate_possibilities(spring_record)
-        for possibility in possibilities:
+        sub_total: int = 0
+        # q_count: int = spring_record.count('?')
+        # max_qs = max(max_qs, q_count)
+        # print(f'{spring_record} ({q_count} ?\'s): {spring_counts} -> ', end='', flush=True)
+        for possibility in generate_possibilities(spring_record):
             # print(f'checking {possibility} against {spring_counts}')
             if is_match(possibility, spring_counts):
                 # print(' -> match!')
@@ -66,6 +66,7 @@ def solve(filename: str) -> int:
         # print(sub_total)
         total += sub_total
 
+    # print(f'Max ? count = {max_qs}')
     return total
 
 

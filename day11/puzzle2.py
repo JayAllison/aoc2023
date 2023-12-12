@@ -4,26 +4,26 @@ input_filename: str = 'input.txt'
 # SCALE = 2  # Part 1
 # SCALE = 10  # Part 2, ex 1
 # SCALE = 100  # Part 2, ex 2
-SCALE = 1_000_000  # Part 2
+SCALE = 1_000_000  # Part 2 - no answer given for example
 
 
 def row_expansion_needed(image: list[list[str]], row: int) -> bool:
-    row_test = set(image[row])
+    row_test: set[str] = set(image[row])
     return len(row_test) == 1
 
 
 def column_expansion_needed(image: list[list[str]], column: int) -> bool:
-    column_test = set([row[column] for row in image])
+    column_test: set[str] = set([row[column] for row in image])
     return len(column_test) == 1
 
 
 def expand(image: list[list[str]]) -> tuple[list[int], list[int]]:
-    rows_to_expand = []
+    rows_to_expand: list[int] = []
     for row in range(len(image)):
         if row_expansion_needed(image, row):
             rows_to_expand.append(row)
 
-    columns_to_expand = []
+    columns_to_expand: list[int] = []
     for column in range(len(image[0])):
         if column_expansion_needed(image, column):
             columns_to_expand.append(column)
@@ -41,9 +41,10 @@ def find_galaxies(image: list[list[str]]) -> list[tuple[int, int]]:
 
 
 def measure_galaxies(galaxies: list[tuple[int, int]], expanded_rows: list[int], expanded_columns: list[int]) -> int:
-    total = 0
+    total: int = 0
     for g1 in galaxies:
         for g2 in galaxies:
+            # measure Manhattan distance between the two, knowing that some of the steps need to be expanded
             y_distance = 0
             for y in range(min(g1[0], g2[0]), max(g1[0], g2[0]), 1):
                 if y in expanded_rows:
@@ -60,11 +61,11 @@ def measure_galaxies(galaxies: list[tuple[int, int]], expanded_rows: list[int], 
 
             total += y_distance + x_distance
 
-    return total // 2  # TODO: fix this the right way?
+    return total // 2  # TODO: fix this the right way by measuring each pair only once?
 
 
-def main():
-    image = [[c for c in line.rstrip()] for line in open(input_filename).readlines()]
+def main(filename: str):
+    image: list[list[str]] = [[c for c in line.rstrip()] for line in open(filename).readlines()]
 
     expanded_rows, expanded_columns = expand(image)
     galaxies = find_galaxies(image)
@@ -74,4 +75,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main(input_filename)

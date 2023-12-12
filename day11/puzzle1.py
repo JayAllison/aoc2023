@@ -10,7 +10,7 @@ def display_image(image: list[list[str]]) -> None:
 
 
 def row_expansion_needed(image: list[list[str]], row: int) -> bool:
-    row_test = set(image[row])
+    row_test: set[str] = set(image[row])
     return len(row_test) == 1
 
 
@@ -19,7 +19,7 @@ def add_row(image: list[list[str]], row: int) -> None:
 
 
 def column_expansion_needed(image: list[list[str]], column: int) -> bool:
-    column_test = set([row[column] for row in image])
+    column_test: set[str] = set([row[column] for row in image])
     return len(column_test) == 1
 
 
@@ -29,14 +29,14 @@ def add_column(image: list[list[str]], column: int) -> None:
 
 
 def expand(image: list[list[str]]) -> None:
-    row = 0
+    row: int = 0
     while row < len(image):
         if row_expansion_needed(image, row):
             add_row(image, row)
             row += 1
         row += 1
 
-    column = 0
+    column: int = 0
     while column < len(image[0]):
         if column_expansion_needed(image, column):
             add_column(image, column)
@@ -54,15 +54,15 @@ def find_galaxies(image: list[list[str]]) -> list[tuple[int, int]]:
 
 
 def measure_galaxies(galaxies: list[tuple[int, int]]) -> int:
-    total = 0
+    total: int = 0
     for g1 in galaxies:
         for g2 in galaxies:
-            total += abs(g2[0] - g1[0]) + abs(g2[1] - g1[1])
-    return total // 2  # TODO: fix this the right way?
+            total += abs(g2[0] - g1[0]) + abs(g2[1] - g1[1])  # calculate Manhattan distance between the two
+    return total // 2  # TODO: fix this the right way by measuring each pair only once?
 
 
-def main():
-    image = [[c for c in line.rstrip()] for line in open(input_filename).readlines()]
+def main(filename: str):
+    image: list[list[str]] = [[c for c in line.rstrip()] for line in open(filename).readlines()]
 
     expand(image)
     galaxies = find_galaxies(image)
@@ -72,4 +72,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main(input_filename)

@@ -18,26 +18,30 @@ def set_column(platform: list, column_number: int, column: list) -> None:
         row[column_number] = column.pop(0)
 
 
-def roll_column_north(platform: list, column_number: int) -> None:
-    column = get_column(platform, column_number)
+def roll_left(rock_list: list):
     # print(f'Before: {''.join(column)}')
     start = 0
-    while start < len(column):
-        if column[start:].count('#'):
-            end = column.index('#', start)
+    while start < len(rock_list):
+        if rock_list[start:].count('#'):
+            end = rock_list.index('#', start)
         else:
-            end = len(column)
+            end = len(rock_list)
 
-        o_count = column[start:end].count('O')
+        o_count = rock_list[start:end].count('O')
 
         for i in range(start, end):
             if i < start + o_count:
-                column[i] = 'O'
+                rock_list[i] = 'O'
             else:
-                column[i] = '.'
+                rock_list[i] = '.'
 
         start = end + 1
     # print(f'After:  {''.join(column)}\n')
+
+
+def roll_column_north(platform: list, column_number: int) -> None:
+    column = get_column(platform, column_number)
+    roll_left(column)
     set_column(platform, column_number, column)
 
 

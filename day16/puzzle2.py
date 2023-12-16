@@ -40,6 +40,8 @@ class Contraption:
         self.active_points = [position]
         self.energized_points = {(y, x)}
         self.repeats = set(position)
+        self.move_in_direction.cache_clear()
+        self.get_next_steps.cache_clear()
 
     @staticmethod
     @cache
@@ -169,7 +171,7 @@ def main():
     entrances += [(y, contraption.max_x-1, 'west') for y in range(contraption.max_y)]
     entrances += [(0, x, 'south') for x in range(contraption.max_x)]
     entrances += [(contraption.max_y - 1, x, 'north') for x in range(contraption.max_x)]
-    energies = [Contraption(input_filename).energize(*entrance) for entrance in entrances]
+    energies = [contraption.energize(*entrance) for entrance in entrances]
     print(max(energies))
 
 

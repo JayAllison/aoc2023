@@ -4,6 +4,31 @@ from functools import cache
 # input_filename: str = 'sample_data'
 input_filename: str = 'input.txt'
 
+# delta y and delta x to move in the specified direction
+MOVES = {
+    'north': (-1, 0),
+    'south': (+1, 0),
+    'east': (0, +1),
+    'west': (0, -1)
+}
+
+# '/': redirect east -> north, west -> south, north -> east, south -> west
+FORWARD_REFLECTION = {
+    'north': 'east',
+    'south': 'west',
+    'east': 'north',
+    'west': 'south'
+}
+
+
+# '\\' redirect east -> south, west -> north, north -> west, south -> east
+BACKWARD_REFLECTION = {
+    'north': 'west',
+    'south': 'east',
+    'east': 'south',
+    'west': 'north'
+}
+
 
 class Contraption:
 
@@ -38,23 +63,13 @@ class Contraption:
         self.active_points = [position]
         self.energized_points = {(y, x)}
         self.repeats = set(position)
-        self.get_next_steps.cache_clear()  # I don't understand why this is needed, but it is
+        self.get_next_steps.cache_clear()
 
     @staticmethod
-    @cache
     def move_in_direction(position: tuple) -> tuple[int, int, str]:
         y, x, direction = position
-        # TODO: this could be a lookup table, and then it wouldn't need to be a cache
-        if direction == 'north':
-            y -= 1
-        elif direction == 'south':
-            y += 1
-        elif direction == 'east':
-            x += 1
-        elif direction == 'west':
-            x -= 1
-
-        return y, x, direction
+        dy, dx = MOVES[direction]
+        return y + dy, x + dx, direction
 
     def is_valid_move(self, position: tuple) -> bool:
         y, x, direction = position
@@ -79,36 +94,12 @@ class Contraption:
             case '.':  # pass straight through in any direction
                 next_steps.append(self.get_next_move((y, x, direction)))
 
-            # TODO: this could be a lookup table instead of logic
             case '/':  # redirect east -> north, west -> south, north -> east, south -> west
-                match direction:
-                    case 'north':
-                        new_direction = 'east'
-                    case 'south':
-                        new_direction = 'west'
-                    case 'east':
-                        new_direction = 'north'
-                    case 'west':
-                        new_direction = 'south'
-                    case _:
-                        new_direction = 'unknown'
-
+                new_direction = FORWARD_REFLECTION[direction]
                 next_steps.append(self.get_next_move((y, x, new_direction)))
 
-            # TODO: this could be a lookup table instead of logic
             case '\\':  # redirect east -> south, west -> north, north -> west, south -> east
-                match direction:
-                    case 'north':
-                        new_direction = 'west'
-                    case 'south':
-                        new_direction = 'east'
-                    case 'east':
-                        new_direction = 'south'
-                    case 'west':
-                        new_direction = 'north'
-                    case _:
-                        new_direction = 'unknown'
-
+                new_direction = BACKWARD_REFLECTION[direction]
                 next_steps.append(self.get_next_move((y, x, new_direction)))
 
             case '-':  # east -> east, west -> west, north -> east & west, south -> east & west

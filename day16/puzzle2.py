@@ -40,8 +40,7 @@ class Contraption:
         self.active_points = [position]
         self.energized_points = {(y, x)}
         self.repeats = set(position)
-        self.move_in_direction.cache_clear()
-        self.get_next_steps.cache_clear()
+        self.get_next_steps.cache_clear()  # I don't understand why this is needed, but it is
 
     @staticmethod
     @cache

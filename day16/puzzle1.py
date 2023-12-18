@@ -95,12 +95,10 @@ class Contraption:
                 next_steps.append(self.get_next_move((y, x, direction)))
 
             case '/':  # redirect east -> north, west -> south, north -> east, south -> west
-                new_direction = FORWARD_REFLECTION[direction]
-                next_steps.append(self.get_next_move((y, x, new_direction)))
+                next_steps.append(self.get_next_move((y, x, FORWARD_REFLECTION[direction])))
 
             case '\\':  # redirect east -> south, west -> north, north -> west, south -> east
-                new_direction = BACKWARD_REFLECTION[direction]
-                next_steps.append(self.get_next_move((y, x, new_direction)))
+                next_steps.append(self.get_next_move((y, x, BACKWARD_REFLECTION[direction])))
 
             case '-':  # east -> east, west -> west, north -> east & west, south -> east & west
                 if direction == 'east' or direction == 'west':

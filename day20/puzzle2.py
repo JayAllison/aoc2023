@@ -30,9 +30,10 @@ for module_name in modules:
 # pprint(modules)
 # print()
 
-# determine what controls the input to rx
-rx_driver = None
-upstream = None
+# determine what controls the input to rx - the puzzle takes forever to actually get a low signal to rx,
+# but fortunately we only have to go back one set of modules to quickly see a repeating pattern of inputs
+rx_driver = None  # which module drives rx (it turns out that there is only one, and it's a conjunction)
+upstream = None  # which modules drive this conjunction - once they're all high, the conjunction will drive rx low
 for module_name in modules:
     if 'rx' in modules[module_name][2]:
         rx_driver = module_name
@@ -57,9 +58,11 @@ for button_presses in range(1, run_length + 1, 1):
         # try to figure out the pattern that will be required upstream to trigger jm to send low to rx
         if module_name == rx_driver and pulse == 'high':
             if multiples[source_module] == 0:
+                # store off the cycle for this input
                 multiples[source_module] = button_presses
                 print(f' - {source_module} high to {module_name} after {multiples[source_module]}')
             else:
+                # confirm that the cycle is consistent
                 if button_presses % multiples[source_module] != 0:
                     print(f'!! {source_module} high to {module_name} after {button_presses}, not a multiple!')
                     confirmed = False
@@ -69,6 +72,7 @@ for button_presses in range(1, run_length + 1, 1):
                 print(button_presses)
                 exit()
 
+        # although not explicitly called out in the instructions, this is not an error, as shown in the 2nd example
         if module_name not in modules:
             # print(f'  !! no module named {module_name} !!')
             continue

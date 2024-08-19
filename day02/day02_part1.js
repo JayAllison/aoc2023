@@ -10,8 +10,16 @@ let lines = fs.readFileSync(filename, 'utf-8').split(/\r?\n/).filter(l => l.leng
 const max = {red: 12, green: 13, blue: 14};
 let count = 0;
 
-lines.forEach(line => {
-    let group = {red: 0, green: 0, blue: 0};
+
+// This is a really big "Anonymous function".  Most would say keep your anonymous functions shorter, because you can't name them
+// I would break this out into it's own named function.  Same goes for the large inner functions.  For example:
+const processLine = (line) => {
+    // this variable can be "const" -- Seems dumb, but when you aren't changing the "reference", its considered const.
+    // const in javascript just means that specific variable is not to be re-assigned -- you can however change values within the
+    // object itself.
+
+    // The general rule of thumb is to never use "let" unless you MUST
+    const group = {red: 0, green: 0, blue: 0};
 
     const group_id = parseInt(/(\d+):/.exec(line)[1]);
 
@@ -34,6 +42,8 @@ lines.forEach(line => {
 
     if (group.red <= max.red && group.green <= max.green && group.blue <= max.blue)
         count += group_id;
-});
+}
+
+lines.forEach(processLine);
 
 console.log(count);

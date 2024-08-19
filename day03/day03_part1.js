@@ -35,7 +35,8 @@ for (let y = 0; y < lines.length; y++) {
 }
 
 // second, find every part number on each line and check if any of its digits are a symbol-adjacent coordinate
-let part_numbers = [];
+// Again, dumb, but const does not mean the variable is static it just means the variable cannot be re-assigned
+const part_numbers = [];
 let line_number = 0;
 lines.forEach(line => {
     const number_finder = /(\d+)/g;

@@ -14,8 +14,8 @@ let lines = fs.readFileSync(filename, 'utf-8').split(/\r?\n/).filter(l => l.leng
 
 let score = 0;
 lines.forEach(line => {
-    let wins, nums;
-    [wins, nums] = line.split(':')[1].split('|').map(x => x.trim());
+    // can turn this into a single line and use const;
+    const [wins, nums] = line.split(':')[1].split('|').map(x => x.trim());
     let winners = wins.split(/\s+/).map(x => parseInt(x));
     let matching_numbers = nums.split(/\s+/).map(x => parseInt(x)).filter(x => winners.includes(x));
     console.log(matching_numbers);
